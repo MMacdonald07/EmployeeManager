@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "paths": {
+    "/employees": {
+      "name": "/employees",
+      "lambdaFunction": "employeesfunction",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}
