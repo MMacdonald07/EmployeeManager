@@ -21,6 +21,12 @@
           "deploymentBucketName": "amplify-employees-dev-122412-deployment",
           "s3Key": "amplify-builds/employeesfunction-6d2b4b75726b7a55535a-build.zip"
         }
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d3dxgmtao87gyc",
+          "type": "cicd"
+        }
       }
     }
   }

@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Amplify, { API } from "aws-amplify";
-import { withAuthenticator, useAuthenticator } from "@aws-amplify/ui-react";
+import {
+    withAuthenticator,
+    useAuthenticator,
+    Button,
+    Heading
+} from "@aws-amplify/ui-react";
 import config from "./aws-exports";
-import "@aws-amplify\\ui\\dist\\styles.css";
+import "@aws-amplify/ui-react/styles.css";
 
 Amplify.configure(config);
 
@@ -56,38 +61,36 @@ function App(): JSX.Element {
 
     return (
         <div>
-            <header>
-                Hello {user.username}
-                <form onSubmit={handleSubmit}>
-                    <input
-                        value={name}
-                        placeholder="Name"
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    <input
-                        value={DOB}
-                        placeholder="Date of Birth"
-                        onChange={(e) => setDOB(e.target.value)}
-                    />
-                    <input
-                        value={salary}
-                        placeholder="Salary"
-                        onChange={(e) => setSalary(e.target.value)}
-                    />
-                    <input
-                        value={joined}
-                        placeholder="Date Joined"
-                        onChange={(e) => setJoined(e.target.value)}
-                    />
-                    <button>Add Employee</button>
-                </form>
-            </header>
+            <Heading>Hello {user.username}</Heading>
+            <form onSubmit={handleSubmit}>
+                <input
+                    value={name}
+                    placeholder="Name"
+                    onChange={(e) => setName(e.target.value)}
+                />
+                <input
+                    value={DOB}
+                    placeholder="Date of Birth"
+                    onChange={(e) => setDOB(e.target.value)}
+                />
+                <input
+                    value={salary}
+                    placeholder="Salary"
+                    onChange={(e) => setSalary(e.target.value)}
+                />
+                <input
+                    value={joined}
+                    placeholder="Date Joined"
+                    onChange={(e) => setJoined(e.target.value)}
+                />
+                <button>Add Employee</button>
+            </form>
             <ul>
                 {employees.map((employee: Employee) => (
-                    <li>{employee.name}</li>
+                    <li key={employee.id}>{employee.name}</li>
                 ))}
             </ul>
-            <button onClick={signOut}>Sign Out</button>
+            <Button onClick={signOut}>Sign Out</Button>
         </div>
     );
 }
