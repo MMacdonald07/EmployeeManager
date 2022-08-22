@@ -25,11 +25,13 @@ function App(): JSX.Element {
     const [DOB, setDOB]: [string, Function] = useState("");
     const [salary, setSalary]: [string, Function] = useState("");
     const [joined, setJoined]: [string, Function] = useState("");
+    const [isLoading, setIsLoading]: [boolean, Function] = useState(true);
     const [employees, setEmployees]: [Array<Employee>, Function] = useState([]);
 
     useEffect(() => {
         API.get("employeesapi", "/employees", {}).then((res) => {
             setEmployees([...res]);
+            setIsLoading(false);
         });
     }, []);
 
@@ -61,36 +63,44 @@ function App(): JSX.Element {
 
     return (
         <div>
-            <Heading>Hello {user.username}</Heading>
-            <form onSubmit={handleSubmit}>
-                <input
-                    value={name}
-                    placeholder="Name"
-                    onChange={(e) => setName(e.target.value)}
-                />
-                <input
-                    value={DOB}
-                    placeholder="Date of Birth"
-                    onChange={(e) => setDOB(e.target.value)}
-                />
-                <input
-                    value={salary}
-                    placeholder="Salary"
-                    onChange={(e) => setSalary(e.target.value)}
-                />
-                <input
-                    value={joined}
-                    placeholder="Date Joined"
-                    onChange={(e) => setJoined(e.target.value)}
-                />
-                <button>Add Employee</button>
-            </form>
-            <ul>
-                {employees.map((employee: Employee) => (
-                    <li key={employee.id}>{employee.name}</li>
-                ))}
-            </ul>
-            <Button onClick={signOut}>Sign Out</Button>
+            {isLoading ? (
+                <div>
+                    <Heading>Loading...</Heading>
+                </div>
+            ) : (
+                <div>
+                    <Heading>Hello {user.username}</Heading>
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            value={name}
+                            placeholder="Name"
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                        <input
+                            value={DOB}
+                            placeholder="Date of Birth"
+                            onChange={(e) => setDOB(e.target.value)}
+                        />
+                        <input
+                            value={salary}
+                            placeholder="Salary"
+                            onChange={(e) => setSalary(e.target.value)}
+                        />
+                        <input
+                            value={joined}
+                            placeholder="Date Joined"
+                            onChange={(e) => setJoined(e.target.value)}
+                        />
+                        <button>Add Employee</button>
+                    </form>
+                    <ul>
+                        {employees.map((employee: Employee) => (
+                            <li key={employee.id}>{employee.name}</li>
+                        ))}
+                    </ul>
+                    <Button onClick={signOut}>Sign Out</Button>
+                </div>
+            )}
         </div>
     );
 }
