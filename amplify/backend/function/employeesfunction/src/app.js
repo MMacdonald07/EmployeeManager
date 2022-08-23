@@ -206,7 +206,7 @@ app.put(path + hashKeyPath + sortKeyPath, function (req, res) {
 
 app.post(path, function (req, res) {
     if (userIdPresent) {
-        req.body[partitionKeyName] =
+        req.body["userId"] =
             req.apiGateway.event.requestContext.identity.cognitoIdentityId ||
             UNAUTH;
     }
