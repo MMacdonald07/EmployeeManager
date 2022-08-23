@@ -206,7 +206,7 @@ app.put(path + hashKeyPath + sortKeyPath, function (req, res) {
 
 app.post(path, function (req, res) {
     if (userIdPresent) {
-        req.body["userId"] =
+        req.body[partitionKeyName] =
             req.apiGateway.event.requestContext.identity.cognitoIdentityId ||
             UNAUTH;
     }
@@ -241,6 +241,7 @@ app.delete(path + hashKeyPath + sortKeyPath, function (req, res) {
             UNAUTH;
     } else {
         params[partitionKeyName] = req.params[partitionKeyName];
+        console.log(params);
         try {
             params[partitionKeyName] = convertUrlType(
                 req.params[partitionKeyName],
@@ -267,8 +268,10 @@ app.delete(path + hashKeyPath + sortKeyPath, function (req, res) {
         TableName: tableName,
         Key: params
     };
+    removeItemParams.Key["id"] = parseInt(req.params.id);
     dynamodb.delete(removeItemParams, (err, data) => {
         if (err) {
+            console.log(err);
             res.statusCode = 500;
             res.json({ error: err, url: req.url });
         } else {

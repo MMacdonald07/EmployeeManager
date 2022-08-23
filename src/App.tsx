@@ -61,6 +61,12 @@ function App(): JSX.Element {
         });
     };
 
+    const handleDelete = (id: number) => {
+        API.del("employeesapi", `/employees/${id.toString()}`, {}).then(() => {
+            setEmployees(employees.filter((employee) => employee.id !== id));
+        });
+    };
+
     return (
         <div>
             {isLoading ? (
@@ -95,7 +101,16 @@ function App(): JSX.Element {
                     </form>
                     <ul>
                         {employees.map((employee: Employee) => (
-                            <li key={employee.id}>{employee.name}</li>
+                            <li key={employee.id}>
+                                {employee.name}{" "}
+                                <Button
+                                    onClick={() => {
+                                        handleDelete(employee.id);
+                                    }}
+                                >
+                                    Delete
+                                </Button>
+                            </li>
                         ))}
                     </ul>
                     <Button onClick={signOut}>Sign Out</Button>
