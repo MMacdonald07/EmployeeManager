@@ -19,7 +19,7 @@
       "function": {
         "employeesfunction": {
           "deploymentBucketName": "amplify-employees-dev-122412-deployment",
-          "s3Key": "amplify-builds/employeesfunction-7547696e447668613363-build.zip"
+          "s3Key": "amplify-builds/employeesfunction-76757a686c42492f2f42-build.zip"
         }
       },
       "hosting": {

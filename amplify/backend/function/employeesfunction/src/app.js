@@ -154,7 +154,7 @@ app.get(path + hashKeyPath + sortKeyPath, function (req, res) {
 app.put(path + hashKeyPath + sortKeyPath, function (req, res) {
     const params = {};
     if (userIdPresent && req.apiGateway) {
-        params[partitionKeyName] =
+        req.body["userId"] =
             req.apiGateway.event.requestContext.identity.cognitoIdentityId ||
             UNAUTH;
     } else {
@@ -186,6 +186,7 @@ app.put(path + hashKeyPath + sortKeyPath, function (req, res) {
         Key: params,
         Item: req.body
     };
+    putItemParams.Key["id"] = parseInt(req.params.id);
     dynamodb.put(putItemParams, (err, data) => {
         if (err) {
             res.statusCode = 500;

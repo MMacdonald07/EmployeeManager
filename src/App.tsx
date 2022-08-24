@@ -8,24 +8,31 @@ import {
 } from "@aws-amplify/ui-react";
 import config from "./aws-exports";
 import "@aws-amplify/ui-react/styles.css";
+import { Dialog, DialogActions, DialogContent } from "@mui/material";
 
 Amplify.configure(config);
 
 interface Employee {
     id: number;
     name: string;
-    dob: string;
+    DOB: string;
     salary: string;
     joined: string;
 }
 
 function App(): JSX.Element {
     const { user, signOut } = useAuthenticator((context) => [context.user]);
+    const [updateId, setUpdateId]: [number, Function] = useState(0);
     const [name, setName]: [string, Function] = useState("");
     const [DOB, setDOB]: [string, Function] = useState("");
     const [salary, setSalary]: [string, Function] = useState("");
     const [joined, setJoined]: [string, Function] = useState("");
+    const [updatedName, setUpdatedName]: [string, Function] = useState("");
+    const [updatedDOB, setUpdatedDOB]: [string, Function] = useState("");
+    const [updatedSalary, setUpdatedSalary]: [string, Function] = useState("");
+    const [updatedJoined, setUpdatedJoined]: [string, Function] = useState("");
     const [isLoading, setIsLoading]: [boolean, Function] = useState(true);
+    const [open, setOpen]: [boolean, Function] = useState(false);
     const [employees, setEmployees]: [Array<Employee>, Function] = useState([]);
 
     useEffect(() => {
@@ -57,6 +64,52 @@ function App(): JSX.Element {
                     joined
                 },
                 ...employees
+            ]);
+            setName("");
+            setDOB("");
+            setSalary("");
+            setJoined("");
+        });
+    };
+
+    const handleOpen = (employee: Employee) => {
+        setUpdateId(employee.id);
+        setUpdatedName(employee.name);
+        setUpdatedDOB(employee.DOB);
+        setUpdatedSalary(employee.salary);
+        setUpdatedJoined(employee.joined);
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setUpdateId(0);
+        setUpdatedName("");
+        setUpdatedDOB("");
+        setUpdatedSalary("");
+        setUpdatedJoined("");
+        setOpen(false);
+    };
+
+    const handleUpdate = (id: number) => {
+        setOpen(false);
+        API.put("employeesapi", `/employees/${id.toString()}`, {
+            body: {
+                id,
+                name: updatedName,
+                DOB: updatedDOB,
+                salary: updatedSalary,
+                joined: updatedJoined
+            }
+        }).then(() => {
+            setEmployees([
+                {
+                    id,
+                    name: updatedName,
+                    DOB: updatedDOB,
+                    salary: updatedSalary,
+                    joined: updatedJoined
+                },
+                ...employees.filter((employee) => employee.id !== id)
             ]);
         });
     };
@@ -103,6 +156,53 @@ function App(): JSX.Element {
                         {employees.map((employee: Employee) => (
                             <li key={employee.id}>
                                 {employee.name}{" "}
+                                <Button
+                                    onClick={() => {
+                                        handleOpen(employee);
+                                    }}
+                                >
+                                    Update
+                                </Button>
+                                <Dialog open={open} onClose={handleClose}>
+                                    <DialogContent>
+                                        <input
+                                            value={updatedName}
+                                            onChange={(e) =>
+                                                setUpdatedName(e.target.value)
+                                            }
+                                        />
+                                        <input
+                                            value={updatedDOB}
+                                            onChange={(e) =>
+                                                setUpdatedDOB(e.target.value)
+                                            }
+                                        />
+                                        <input
+                                            value={updatedSalary}
+                                            onChange={(e) =>
+                                                setUpdatedSalary(e.target.value)
+                                            }
+                                        />
+                                        <input
+                                            value={updatedJoined}
+                                            onChange={(e) =>
+                                                setUpdatedJoined(e.target.value)
+                                            }
+                                        />
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={handleClose}>
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                handleUpdate(updateId);
+                                            }}
+                                        >
+                                            Update
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog>
                                 <Button
                                     onClick={() => {
                                         handleDelete(employee.id);
