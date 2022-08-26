@@ -27,12 +27,9 @@ function App(): JSX.Element {
     const [DOB, setDOB]: [string, Function] = useState("");
     const [salary, setSalary]: [string, Function] = useState("");
     const [joined, setJoined]: [string, Function] = useState("");
-    const [updatedName, setUpdatedName]: [string, Function] = useState("");
-    const [updatedDOB, setUpdatedDOB]: [string, Function] = useState("");
-    const [updatedSalary, setUpdatedSalary]: [string, Function] = useState("");
-    const [updatedJoined, setUpdatedJoined]: [string, Function] = useState("");
     const [isLoading, setIsLoading]: [boolean, Function] = useState(true);
     const [open, setOpen]: [boolean, Function] = useState(false);
+    const [update, setUpdate]: [boolean, Function] = useState(false);
     const [employees, setEmployees]: [Array<Employee>, Function] = useState([]);
 
     useEffect(() => {
@@ -42,8 +39,8 @@ function App(): JSX.Element {
         });
     }, []);
 
-    const handleSubmit = (e: React.SyntheticEvent) => {
-        e.preventDefault();
+    const handleAdd = () => {
+        setOpen(false);
         const id: number = new Date().valueOf();
 
         API.post("employeesapi", "/employees", {
@@ -65,28 +62,28 @@ function App(): JSX.Element {
                 },
                 ...employees
             ]);
-            setName("");
-            setDOB("");
-            setSalary("");
-            setJoined("");
         });
     };
 
-    const handleOpen = (employee: Employee) => {
-        setUpdateId(employee.id);
-        setUpdatedName(employee.name);
-        setUpdatedDOB(employee.DOB);
-        setUpdatedSalary(employee.salary);
-        setUpdatedJoined(employee.joined);
+    const handleOpen = (updateItem: boolean, employee?: Employee) => {
+        if (updateItem && employee) {
+            setUpdate(true);
+            setUpdateId(employee.id);
+            setName(employee.name);
+            setDOB(employee.DOB);
+            setSalary(employee.salary);
+            setJoined(employee.joined);
+        }
         setOpen(true);
     };
 
     const handleClose = () => {
         setUpdateId(0);
-        setUpdatedName("");
-        setUpdatedDOB("");
-        setUpdatedSalary("");
-        setUpdatedJoined("");
+        setName("");
+        setDOB("");
+        setSalary("");
+        setJoined("");
+        setUpdate(false);
         setOpen(false);
     };
 
@@ -95,23 +92,29 @@ function App(): JSX.Element {
         API.put("employeesapi", `/employees/${id.toString()}`, {
             body: {
                 id,
-                name: updatedName,
-                DOB: updatedDOB,
-                salary: updatedSalary,
-                joined: updatedJoined
+                name,
+                DOB,
+                salary,
+                joined
             }
         }).then(() => {
             setEmployees([
                 {
                     id,
-                    name: updatedName,
-                    DOB: updatedDOB,
-                    salary: updatedSalary,
-                    joined: updatedJoined
+                    name,
+                    DOB,
+                    salary,
+                    joined
                 },
                 ...employees.filter((employee) => employee.id !== id)
             ]);
         });
+        setUpdate(false);
+        setUpdateId(0);
+        setName("");
+        setDOB("");
+        setSalary("");
+        setJoined("");
     };
 
     const handleDelete = (id: number) => {
@@ -129,36 +132,13 @@ function App(): JSX.Element {
             ) : (
                 <div>
                     <Heading>Hello {user.username}</Heading>
-                    <form onSubmit={handleSubmit}>
-                        <input
-                            value={name}
-                            placeholder="Name"
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                        <input
-                            value={DOB}
-                            placeholder="Date of Birth"
-                            onChange={(e) => setDOB(e.target.value)}
-                        />
-                        <input
-                            value={salary}
-                            placeholder="Salary"
-                            onChange={(e) => setSalary(e.target.value)}
-                        />
-                        <input
-                            value={joined}
-                            placeholder="Date Joined"
-                            onChange={(e) => setJoined(e.target.value)}
-                        />
-                        <button>Add Employee</button>
-                    </form>
                     <ul>
                         {employees.map((employee: Employee) => (
                             <li key={employee.id}>
                                 {employee.name}{" "}
                                 <Button
                                     onClick={() => {
-                                        handleOpen(employee);
+                                        handleOpen(true, employee);
                                     }}
                                 >
                                     Update
@@ -166,27 +146,27 @@ function App(): JSX.Element {
                                 <Dialog open={open} onClose={handleClose}>
                                     <DialogContent>
                                         <input
-                                            value={updatedName}
+                                            value={name}
                                             onChange={(e) =>
-                                                setUpdatedName(e.target.value)
+                                                setName(e.target.value)
                                             }
                                         />
                                         <input
-                                            value={updatedDOB}
+                                            value={DOB}
                                             onChange={(e) =>
-                                                setUpdatedDOB(e.target.value)
+                                                setDOB(e.target.value)
                                             }
                                         />
                                         <input
-                                            value={updatedSalary}
+                                            value={salary}
                                             onChange={(e) =>
-                                                setUpdatedSalary(e.target.value)
+                                                setSalary(e.target.value)
                                             }
                                         />
                                         <input
-                                            value={updatedJoined}
+                                            value={joined}
                                             onChange={(e) =>
-                                                setUpdatedJoined(e.target.value)
+                                                setJoined(e.target.value)
                                             }
                                         />
                                     </DialogContent>
@@ -196,10 +176,14 @@ function App(): JSX.Element {
                                         </Button>
                                         <Button
                                             onClick={() => {
-                                                handleUpdate(updateId);
+                                                if (update) {
+                                                    handleUpdate(updateId);
+                                                } else {
+                                                    handleAdd();
+                                                }
                                             }}
                                         >
-                                            Update
+                                            {update ? <>Update</> : <>Add</>}
                                         </Button>
                                     </DialogActions>
                                 </Dialog>
@@ -213,6 +197,43 @@ function App(): JSX.Element {
                             </li>
                         ))}
                     </ul>
+                    <Button onClick={() => handleOpen(false, undefined)}>
+                        Add Employee
+                    </Button>
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogContent>
+                            <input
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                            <input
+                                value={DOB}
+                                onChange={(e) => setDOB(e.target.value)}
+                            />
+                            <input
+                                value={salary}
+                                onChange={(e) => setSalary(e.target.value)}
+                            />
+                            <input
+                                value={joined}
+                                onChange={(e) => setJoined(e.target.value)}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Cancel</Button>
+                            <Button
+                                onClick={() => {
+                                    if (update) {
+                                        handleUpdate(updateId);
+                                    } else {
+                                        handleAdd();
+                                    }
+                                }}
+                            >
+                                {update ? <>Update</> : <>Add</>}
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                     <Button onClick={signOut}>Sign Out</Button>
                 </div>
             )}
