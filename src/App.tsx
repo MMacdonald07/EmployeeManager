@@ -3,12 +3,23 @@ import Amplify, { API } from "aws-amplify";
 import {
     withAuthenticator,
     useAuthenticator,
-    Button,
     Heading
 } from "@aws-amplify/ui-react";
+import { Button } from "reactstrap";
 import config from "./aws-exports";
 import "@aws-amplify/ui-react/styles.css";
-import { Dialog, DialogActions, DialogContent } from "@mui/material";
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    Table,
+    TableBody,
+    TableHead,
+    TableCell,
+    TableRow,
+    TextField,
+    Box
+} from "@mui/material";
 
 Amplify.configure(config);
 
@@ -126,116 +137,161 @@ function App(): JSX.Element {
     return (
         <div>
             {isLoading ? (
-                <div>
+                <Box sx={{ p: 5, ml: 5 }}>
                     <Heading>Loading...</Heading>
-                </div>
+                </Box>
             ) : (
-                <div>
-                    <Heading>Hello {user.username}</Heading>
-                    <ul>
-                        {employees.map((employee: Employee) => (
-                            <li key={employee.id}>
-                                {employee.name}{" "}
-                                <Button
-                                    onClick={() => {
-                                        handleOpen(true, employee);
-                                    }}
-                                >
-                                    Update
-                                </Button>
-                                <Dialog open={open} onClose={handleClose}>
-                                    <DialogContent>
-                                        <input
-                                            value={name}
-                                            onChange={(e) =>
-                                                setName(e.target.value)
-                                            }
-                                        />
-                                        <input
-                                            value={DOB}
-                                            onChange={(e) =>
-                                                setDOB(e.target.value)
-                                            }
-                                        />
-                                        <input
-                                            value={salary}
-                                            onChange={(e) =>
-                                                setSalary(e.target.value)
-                                            }
-                                        />
-                                        <input
-                                            value={joined}
-                                            onChange={(e) =>
-                                                setJoined(e.target.value)
-                                            }
-                                        />
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button onClick={handleClose}>
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            onClick={() => {
-                                                if (update) {
-                                                    handleUpdate(updateId);
-                                                } else {
-                                                    handleAdd();
-                                                }
-                                            }}
-                                        >
-                                            {update ? <>Update</> : <>Add</>}
-                                        </Button>
-                                    </DialogActions>
-                                </Dialog>
-                                <Button
-                                    onClick={() => {
-                                        handleDelete(employee.id);
-                                    }}
-                                >
-                                    Delete
-                                </Button>
-                            </li>
-                        ))}
-                    </ul>
-                    <Button onClick={() => handleOpen(false, undefined)}>
-                        Add Employee
-                    </Button>
-                    <Dialog open={open} onClose={handleClose}>
-                        <DialogContent>
-                            <input
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                            <input
-                                value={DOB}
-                                onChange={(e) => setDOB(e.target.value)}
-                            />
-                            <input
-                                value={salary}
-                                onChange={(e) => setSalary(e.target.value)}
-                            />
-                            <input
-                                value={joined}
-                                onChange={(e) => setJoined(e.target.value)}
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleClose}>Cancel</Button>
+                <Box sx={{ p: 5, display: "flex", flexWrap: "wrap" }}>
+                    <Box sx={{ ml: 5, pb: 2 }}>
+                        <Heading>Hello {user.username}</Heading>
+                    </Box>
+                    <div className="container border border-secondary rounded center">
+                        <Table stickyHeader>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Name</TableCell>
+                                    <TableCell>Date of Birth</TableCell>
+                                    <TableCell>Salary</TableCell>
+                                    <TableCell>Joining Date</TableCell>
+                                    <TableCell />
+                                    <TableCell />
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {employees.map((employee: Employee) => (
+                                    <TableRow key={employee.id}>
+                                        <TableCell>{employee.name}</TableCell>
+                                        <TableCell>{employee.DOB}</TableCell>
+                                        <TableCell>{employee.salary}</TableCell>
+                                        <TableCell>{employee.joined}</TableCell>
+                                        <TableCell>
+                                            <Button
+                                                className="btn btn-lg btn-info"
+                                                onClick={() => {
+                                                    handleOpen(true, employee);
+                                                }}
+                                            >
+                                                Update
+                                            </Button>
+                                            <Dialog
+                                                open={open}
+                                                onClose={handleClose}
+                                            >
+                                                <DialogContent>
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex"
+                                                        }}
+                                                    >
+                                                        <Box sx={{ p: 1 }}>
+                                                            <TextField
+                                                                label="Name"
+                                                                value={name}
+                                                                onChange={(e) =>
+                                                                    setName(
+                                                                        e.target
+                                                                            .value
+                                                                    )
+                                                                }
+                                                            />
+                                                        </Box>
+                                                        <Box sx={{ p: 1 }}>
+                                                            <TextField
+                                                                label="Date of Birth"
+                                                                value={DOB}
+                                                                onChange={(e) =>
+                                                                    setDOB(
+                                                                        e.target
+                                                                            .value
+                                                                    )
+                                                                }
+                                                            />
+                                                        </Box>
+                                                        <Box sx={{ p: 1 }}>
+                                                            <TextField
+                                                                label="Salary"
+                                                                value={salary}
+                                                                onChange={(e) =>
+                                                                    setSalary(
+                                                                        e.target
+                                                                            .value
+                                                                    )
+                                                                }
+                                                            />
+                                                        </Box>
+                                                        <Box sx={{ p: 1 }}>
+                                                            <TextField
+                                                                label="Joining Date"
+                                                                value={joined}
+                                                                onChange={(e) =>
+                                                                    setJoined(
+                                                                        e.target
+                                                                            .value
+                                                                    )
+                                                                }
+                                                            />
+                                                        </Box>
+                                                    </Box>
+                                                </DialogContent>
+                                                <DialogActions>
+                                                    <Button
+                                                        className="btn btn-lg btn-danger"
+                                                        onClick={handleClose}
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                    <Button
+                                                        className="btn btn-lg btn-success"
+                                                        onClick={() => {
+                                                            if (update) {
+                                                                handleUpdate(
+                                                                    updateId
+                                                                );
+                                                            } else {
+                                                                handleAdd();
+                                                            }
+                                                        }}
+                                                    >
+                                                        {update ? (
+                                                            <>Update</>
+                                                        ) : (
+                                                            <>Add</>
+                                                        )}
+                                                    </Button>
+                                                </DialogActions>
+                                            </Dialog>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button
+                                                className="btn btn-lg btn-danger"
+                                                onClick={() => {
+                                                    handleDelete(employee.id);
+                                                }}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    <Box sx={{ ml: 4, mt: 2, display: "flex" }}>
+                        <Box sx={{ mr: 1 }}>
                             <Button
-                                onClick={() => {
-                                    if (update) {
-                                        handleUpdate(updateId);
-                                    } else {
-                                        handleAdd();
-                                    }
-                                }}
+                                className="btn btn-lg btn-success"
+                                onClick={() => handleOpen(false, undefined)}
                             >
-                                {update ? <>Update</> : <>Add</>}
+                                Add Employee
                             </Button>
-                        </DialogActions>
-                    </Dialog>
-                    <Button onClick={signOut}>Sign Out</Button>
-                </div>
+                        </Box>
+                        <Box sx={{ ml: 1 }}>
+                            <Button className="btn btn-lg" onClick={signOut}>
+                                Sign Out
+                            </Button>
+                        </Box>
+                    </Box>
+                </Box>
             )}
         </div>
     );
